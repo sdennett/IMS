@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="inventory.jpg">
+
+    <title>Update Data</title>
+
+   <!-- Latest compiled and minified CSS -->
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+  </head>
+
+<body>
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#" style="color:#8B008B">Inventory Management</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+              <li><a href="index.html"><span class="glyphicon glyphicon-home" aria-hidden="true"></span></a></li>
+              <li><a href="dataentry.html">Data Entry</a></li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Inventory <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a href="inventory.html">All</a></li>
+                  <li><a href="inventoryoh.html">On Hand</a></li>
+                  <li><a href="inventorysold.html">Sold</a></li>
+                </ul>
+              </li>
+              <li><a href="search.html"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></a></li>
+              <li><a href="summary.html">Summary</a></li>
+              <li class="active"><a href="update.html">Update</a></li>
+            </li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+   <br><br><br>
+    <div class="container">
+
+      <!-- Main component for a primary marketing message or call to action -->
+      <div class="jumbotron" align="center";">
+         <h1 style="color:#8B008B">Inventory Management</h1>
+         <p style="color:#8B008B">Update Data</p>
+      </div>
+
+    <!-- </div> <!-- /container -->
+
+   <div class="col-md-6">
+    <div class="panel panel-default">
+           <div class="panel-heading">
+             <h3 class="panel-title">Update Data</h3>
+           </div>
+          <div class="panel-body">
+            <!-- SHOW ERROR/SUCCESS MESSAGES -->
+          	<div id="updatesuccess" class="well" style="display:none"></div>
+            <form name="gameLogin" id="updateform">
+              <div class="form-group">
+                <label>Enter ID# to be updated:</label>
+                <input type="number" step="1" name="itemnumber" class="form-control" id="inputid" placeholder="ID# to be updated">
+                <span class="help-block" id="errorid" style="color:red"></span>
+              </div>
+              <div class="form-group">
+                <label>Description:</label>
+                <textarea rows="4" type="text" name="description" class="form-control" id="inputdescription" placeholder="Description"></textarea>
+              </div>
+              <div class="form-group">
+                <label>Cost:</label>
+                <input type="number" step="0.01" name="cost" class="form-control" id="inputcost" placeholder="Cost">
+              </div>
+              <div class="form-group">
+                <label>Priced:</label>
+                <input type="number" step="0.01" name="priced" class="form-control" id="inputpriced" placeholder="Priced">
+              </div>
+              <div class="form-group">
+                <label>Sold:</label>
+                <input type="number" step="0.01" name="sold" class="form-control" id="inputsold" placeholder="Sold (Enter 0 to remove sale)">
+              </div>
+              <div class="form-group">
+                <label>Comment:</label>
+                <textarea rows="4" type="text" name="comment" class="form-control" id="inputcomment" placeholder="Comment (Enter a space to remove comment)"></textarea>
+              </div>
+             <div class="checkbox">
+               <label><input type="checkbox" class="style3" name="remove" value="1" id="checkboxremove">Remove Item</label>
+             </div>
+              <button type="submit" class="btn btn-primary" id="submitdata">Submit</button>
+            </form>
+            <br>
+         </div>
+    </div>
+   </div>
+
+</body>
+</html>
+
+<!----------------------------------------------------
+   Script Section: Scripts must be loaded in the
+                   sequence below.
+------------------------------------------------------>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+<script>
+var urlRead = "getitembyid.php";
+var urlUpdate = "update.php";
+
+/*
+*   Function: document.ready
+*/
+
+$( document ).ready(function() {
+  });
+
+/*
+*   Submit button selected
+*/
+$( "#submitdata" ).click(function(){
+  event.preventDefault();
+  submitUpdate();
+});
+/*
+*   ID input changed
+*/
+$( "#inputid" ).change(function(){
+  event.preventDefault();
+  console.log("inputid.change");
+  $("#updatesuccess").hide();
+  populateFormData();
+});
+/*
+*  Enter Key validation
+*/
+$(document).keypress(function(e) {
+  var validID = "inputid";
+  if(e.which == 13) {
+    event.preventDefault();
+    var focused = document.activeElement;
+    console.log("Enter Key Pressed");
+    $("#updatesuccess").hide();
+    if(focused.id == validID) {
+      populateFormData();
+    } else {
+      // Do nothing -- ignore Enter Key
+    }
+  }
+});
+
+function submitUpdate() {
+  var param = $("#updateform").serialize();
+  console.log(param);
+  $.ajax({
+    method: "GET",
+    url: urlUpdate,
+    data: param
+  })
+    .done(function( msg ){
+      var myArr = JSON.parse(msg);
+      if ( myArr.success == true ) {
+        // TODO: Notify that the update was SUCCESSFUL
+        console.log("Update successful");
+        $("#updatesuccess").text(myArr.message).show();
+        resetFormData();
+      } else {
+        // TODO: Notify that the update was UNSUCCESSFUL
+        console.log("Update unsuccessful");
+        // $("#updatesuccess").text(myArr.message).show();
+        $("#errorid").text(myArr.message);
+        resetFormData();
+      }
+  });
+
+}
+/*
+*   FUNCTION: resetFormData
+*
+*/
+function resetFormData() {
+    console.log("resetFormData");
+    $("#inputid").attr("placeholder", "ID# to be updated").val("").focus().blur();
+    $("#inputdescription").attr("placeholder", "Description").val("").focus().blur();
+    $("#inputcost").attr("placeholder", "Cost").val("").focus().blur();
+    $("#inputpriced").attr("placeholder", "Prices").val("").focus().blur();
+    $("#inputsold").attr("placeholder", "Sold").val("").focus().blur();
+    $("#inputcomment").attr("placeholder", "Comment").val("").focus().blur();
+    $("#inputremoveitem").prop('checked', false);
+}
+/*
+*   Function: populateFormData
+*   Populate the form from the database
+*/
+function populateFormData() {
+  var itemID = $( "#inputid" ).val();
+  var param = "itemnumber=" + itemID;
+  console.log("populateFormData, itemID = " + itemID);
+  $("#errorid").text("");
+  $.ajax({
+    method: "GET",
+    url: urlRead,
+    data: param
+  })
+    .done(function( msg ){
+      var myArr = JSON.parse(msg);
+      if ( myArr.success == 1 ) {
+        //$("#inputid").val(myArr.inventory[0].ID);
+        $("#inputdescription").val(myArr.inventory[0].Description);
+        $("#inputcost").val(myArr.inventory[0].Cost);
+        $("#inputpriced").val(myArr.inventory[0].Priced);
+        $("#inputsold").val(myArr.inventory[0].Sold);
+        $("#inputcomment").val(myArr.inventory[0].Comments);
+        $("#checkboxremove").prop('checked', false);
+      } else {
+        $("#errorid").text("ID: " + itemID + " not found.");
+        // TODO: Clear the form with the exception of the ID field.
+        resetFormData();
+      }
+    })
+}
+</script>

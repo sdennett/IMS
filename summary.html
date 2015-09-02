@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="icon" href="inventory.jpg">
+    <!-- Make it mobile -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Disable zooming -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Summary</title>
+
+    <!-- Bootstrap -->
+    <!-- Latest compiled and minified CSS -->
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+      <!-- Optional theme -->
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+
+      <!-- Latest compiled and minified JavaScript
+      Loaded Below -->
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+<!-- <meta http-equiv='refresh' content='120'>  <!-- Comment out to turn auto refresh off -->
+
+</head>
+
+<body onload="load_Table()">
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#" style="color:#8B008B">Inventory Management</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+              <li><a href="index.html"><span class="glyphicon glyphicon-home" aria-hidden="true"></span></a></li>
+              <li><a href="dataentry.html">Data Entry</a></li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Inventory <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a href="inventory.html">All</a></li>
+                  <li><a href="inventoryoh.html">On Hand</a></li>
+                  <li><a href="inventorysold.html">Sold</a></li>
+                </ul>
+              </li>
+              <li><a href="search.html"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></a></li>
+              <li class="active"><a href="summary.html">Summary</a></li>
+              <li><a href="update.html">Update</a></li>
+            </li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+   <br><br><br>
+    <div class="container">
+
+      <!-- Main component for a primary marketing message or call to action -->
+      <div class="jumbotron" align="center";">
+         <h1 style="color:#8B008B">Inventory Management</h1>
+         <p style="color:#8B008B">Summary</p>
+      </div>
+
+   <br>
+   <div class="container" id="positions">Summary is empty</div>
+   </br>
+
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+   <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+
+<script>
+
+// Load the content
+var xmlhttp = new XMLHttpRequest();
+
+      $('#theme li').click(function () {
+         load_Table($(this).text());
+              });
+
+      function load_Table(sortcriteria) {
+      var xmlhttp = new XMLHttpRequest();
+      // Collect the dropdown information
+      url = "summary.php"
+
+
+      xmlhttp.onreadystatechange = function() {
+          if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+              var myArr = JSON.parse(xmlhttp.responseText);
+              showInventory(myArr);
+          }
+      }
+      xmlhttp.open("GET", url, true);
+      xmlhttp.send();
+      }
+
+// Display the parsed information into a table
+function showInventory(arr) {
+	var out = "";
+   var i;
+	out += "<table class='table table-striped' data-show-columns='true' id='positions'>";
+   out += "<th align='left' width=10%>Count</th>";
+	out += "<th align='left' width=10%>Cost</th>";
+   out += "<th align='left' width=10%>Priced</th>";
+   out += "<th align='left' width=10%>Dif</th>";
+   out += "<th align='left' width=10%>Sold</th>";
+
+	for(i = 0; i < arr.inventory.length; i++) {
+        out += "<tr><td>" + arr.inventory[i].Count + "</td>"
+		      +  "<td>" + arr.inventory[i].Cost + "</td>"
+		      +  "<td>" + arr.inventory[i].Priced + "</td>"
+            +  "<td>" + arr.inventory[i].Dif + "</td>"
+            +  "<td>" + arr.inventory[i].Sold + "</td></tr>"
+    }
+	out += "</table>"
+	document.getElementById("positions").innerHTML = out;
+}
+</script>
+
+</body>
+</html>

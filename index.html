@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<link rel="icon" href="inventory.jpg">
+<!-- Make it mobile -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Disable zooming -->
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+	<title>Data Entry</title>
+
+	<!-- Bootstrap -->
+	<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+
+		<!-- Latest compiled and minified JavaScript -- Loaded below
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script> -->
+
+	<!-- LOAD JQUERY -- Loaded below
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script> -->
+	<!-- LOAD ANGULAR -->
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script>
+
+	<!-- PROCESS FORM WITH AJAX (NEW) -->
+	<script>
+
+		// define angular module/app
+		var formApp = angular.module('formApp', []);
+
+		// create angular controller and pass in $scope and $http
+		function formController($scope, $http) {
+
+			// create a blank object to hold our form information
+			// $scope will allow this to pass between controller and view
+			$scope.formData = {};
+
+			// process the form
+			$scope.processForm = function() {
+				$http({
+			        method  : 'POST',
+			        url     : 'dataentry.php',
+			        data    : $.param($scope.formData),  // pass in data as strings
+			        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }  // set the headers so angular passing info as form data (not request payload)
+			    })
+			        .success(function(data) {
+			            console.log(data);
+
+			            if (!data.success) {
+			            	// if not successful, bind errors to error variables
+			                $scope.errorDescription = data.errors.description;
+			                $scope.errorCost = data.errors.cost;
+											$scope.errorPriced = data.errors.priced;
+			            } else {
+			            	// if successful, bind success message to message
+										  // Capture the message sent back from POST
+			                $scope.message = data.message;
+											// Clear any error messages
+                      $scope.errorDescription = '';
+			                $scope.errorCost = '';
+											$scope.errorPriced = '';
+											// Set the formData back to the original -- clear the form
+											$scope.formData.description = '';
+											$scope.formData.cost = '';
+											$scope.formData.priced = '';
+											$scope.formData.comment = '';
+											$scope.myForm.$setPristine();
+			            }
+			        });
+
+			};
+
+		}
+
+	</script>
+        <style>
+            .ng-valid.ng-dirty{
+                border-color: green;
+            }
+            .ng-invalid.ng-dirty{
+                border-color: red;
+            }
+        </style>
+</head>
+
+<body>
+
+	<!-- Fixed navbar -->
+	<nav class="navbar navbar-default navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#" style="color:#8B008B">Inventory Management</a>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+						<li><a href="index.html"><span class="glyphicon glyphicon-home" aria-hidden="true"></span></a></li>
+						<li class="active"><a href="dataentry.html">Data Entry</a></li>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Inventory <span class="caret"></span></a>
+							<ul class="dropdown-menu">
+								<li><a href="inventory.html">All</a></li>
+								<li><a href="inventoryoh.html">On Hand</a></li>
+								<li><a href="inventorysold.html">Sold</a></li>
+							</ul>
+						</li>
+						<li><a href="search.html"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></a></li>
+						<li><a href="summary.html">Summary</a></li>
+						<li><a href="update.html">Update</a></li>
+					</li>
+				</ul>
+			</div><!--/.nav-collapse -->
+		</div>
+	</nav>
+	<br><br><br>
+
+	<!-- Main component for a primary marketing message or call to action -->
+	<div class="container">
+	<div class="jumbotron" align="center";">
+		<h1 style="color:#8B008B">Inventory Management</h1>
+		<p style="color:#8B008B">Update Data</p>
+	</div>
+</div> <!-- END OF CONTAINER -->
+
+<!-- apply the module and controller to our body so angular is applied to that -->
+<div ng-app="formApp" ng-controller="formController">
+<div class="container">
+
+	<div class="col-md-6">
+	<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title">Data Entry</h3>
+					</div>
+	<div class="panel-body">
+	<!-- SHOW ERROR/SUCCESS MESSAGES -->
+	<div id="messages" class="well" ng-show="message">{{ message }}</div>
+
+	<!-- FORM -->
+	<form ng-submit="processForm()" name="myForm">
+		<!-- DESCRIPTION -->
+		<div id="description-group" class="form-group" ng-class="{ 'has-error' : errorDescription }">
+			<label>Description:</label>
+			<textarea rows="4" type="text" name="description" class="form-control" placeholder="Description" ng-model="formData.description"></textarea>
+                        <span class="help-block" ng-show="errorDescription">{{ errorDescription }}</span>
+		</div>
+
+		<!-- COST -->
+		<div id="cost-group" class="form-group" ng-class="{ 'has-error' : errorCost }">
+			<label>Cost:</label>
+			<input type="number" step=".01" name="cost" class="form-control" placeholder="Cost" ng-model="formData.cost"></input>
+			<span class="help-block" ng-show="errorCost">{{ errorCost }}</span>
+		</div>
+
+		<!-- PRICED -->
+		<div id="priced-group" class="form-group" ng-class="{ 'has-error' : errorPriced }">
+			<label>Priced:</label>
+			<input type="number" step=".01" name="priced" class="form-control" placeholder="Priced" ng-model="formData.priced"></input>
+			<span class="help-block" ng-show="errorPriced">{{ errorPriced }}</span>
+		</div>
+
+		<!-- COMMENT -->
+		<div id="comment-group" class="form-group" ng-class="{ 'has-error' : errorComment }">
+			<label>Comment:</label>
+			<textarea rows="4" type="text" name="comment" class="form-control" placeholder="Comment" ng-model="formData.comment"></textarea>
+												<span class="help-block" ng-show="errorComment">{{ errorComment }}</span>
+		</div>
+
+		<!-- SUBMIT BUTTON -->
+		<button type="submit" class="btn btn-primary">Submit</button>
+	</form>
+</div>
+</div>
+</div>
+
+	<!-- SHOW DATA FROM INPUTS AS THEY ARE BEING TYPED
+	<pre>
+		{{ formData }}
+	</pre> -->
+
+</div>
+</div>
+</body>
+</html>
+
+<!----------------------------------------------------
+   Script Section needed here so Menu works correctly
+------------------------------------------------------>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>

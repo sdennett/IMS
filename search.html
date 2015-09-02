@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en"><html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="icon" href="inventory.jpg">
+  <!-- Make it mobile -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Disable zooming -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+  <!-- Load Jquery
+  Loaded below -->
+
+  <!-- Load Bootstrap -->
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
+  <!-- Latest compiled and minified JavaScript
+  Loaded below-->
+
+  <!-- Load datapicker -->
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="datepicker/css/datepicker.css">
+
+  <title>Inventory Search</title>
+
+</head>
+<body>
+  <!-- Fixed navbar -->
+  <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#" style="color:#8B008B">Inventory Management</a>
+      </div>
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+            <li><a href="index.html"><span class="glyphicon glyphicon-home" aria-hidden="true"></span></a></li>
+            <li><a href="dataentry.html">Data Entry</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Inventory <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="inventory.html">All</a></li>
+                <li><a href="inventoryoh.html">On Hand</a></li>
+                <li><a href="inventorysold.html">Sold</a></li>
+              </ul>
+            </li>
+            <li class="active"><a href="search.html"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></a></li>
+            <li><a href="summary.html">Summary</a></li>
+            <li><a href="update.html">Update</a></li>
+          </li>
+        </ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </nav>
+ <br><br><br>
+
+ <div class="container">
+
+ <!-- Main component for a primary marketing message or call to action -->
+ <div class="jumbotron" align="center";">
+    <h1 style="color:#8B008B">Inventory Management</h1>
+    <p style="color:#8B008B">Search Inventory</p>
+ </div>
+
+<!-- Create the search panel-->
+<div>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Inventory Search Form</h3><br>
+      <form id="searchcriteria">
+          <!-- Input Group: Search and All, On-Hand, Sold -->
+          <div class="input-group">
+          <span class="input-group-btn">
+            <button class="btn btn-default" type="button" id="searchbutton">
+              <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+            </button>
+          </span>
+          <input type="text" name="search" class="form-control" id="inputsearch" placeholder="Search by Description . . .">
+          <span class="input-group-addon">
+            <input type="radio" name="inventory" value="all" checked="checked">All
+            <input type="radio" name="inventory" value="onhand">On-Hand
+            <input type="radio" name="inventory" value="sold">Sold
+          </span>
+        </div><!-- /input-group Search and All, On-Hand, Sold -->
+
+        <!-- Input Group: Search with Start Date criteria -->
+        <div class="input-group col-md-4">
+        <span class="input-group-btn">
+          <button class="btn btn-default" type="button" id="startdatebutton">
+            <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+          </button>
+        </span>
+          <input name="startdate" class="datepicker" data-date-format="mm/dd/yyyy" placeholder="Start Date">
+        </div><!-- /input-group Search with Start Date criteria -->
+
+        <!-- Input Group: Search with Stop Date criteria -->
+        <div class="input-group col-md-4">
+        <span class="input-group-btn">
+          <button class="btn btn-default" type="button" id="stopdatebutton">
+            <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+          </button>
+        </span>
+          <input name="enddate" class="datepicker" data-date-format="mm/dd/yyyy" placeholder="End Date">
+        </div><!-- /input-group Search with Stop Date criteria -->
+     </form>
+    </div>
+    <!-- Results Displayed here -->
+    <div class="panel-body">
+      <p id="searchresults"></p>
+    </div>
+  </div>
+ </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script src="datepicker/js/bootstrap-datepicker.js"></script>
+
+<script>
+
+$( document ).ready(function() {
+      /*
+      *   TODO -  Add Date Picker to search a range of dates
+      */
+  });
+  /*
+  *   FUNCTION: datepicker
+  *   Documentation: https://bootstrap-datepicker.readthedocs.org/en/latest/
+  */
+  $.fn.datepicker.noConflict
+
+  $('.datepicker').datepicker({
+    format: 'mm/dd/yyyy',
+    startDate: '-3d'
+  });
+
+  /*
+  *   FUNCTION: showFormData
+  *
+  */
+  function showFormData() {
+
+      var url = "inventorysearch.php";
+      var param = $( "#searchcriteria" ).serialize();
+      $( "#searchresults" ).text( "Retreving Search . . ." );
+      $.ajax({
+        method: "GET",
+        url: url,
+        data: param
+      })
+        .done(function( msg ){
+          var myArr = JSON.parse(msg);
+          if ( myArr.success == 1 ) {
+            showInventory(myArr);
+          } else {
+            $( "#searchresults" ).text( "0 Item(s) found" );
+          }
+        })
+        //resetFormData();
+  }
+  /*
+  *   FUNCTION: resetFormData
+  *
+  */
+  function resetFormData() {
+      $("#inputsearch").attr("placeholder", "Search by Description . . .").val("").focus().blur();
+      $("#inputremoveitem").prop('checked', false);
+  }
+  /*
+  *   Search button selected
+  */
+  $("#searchbutton").click(function () {
+      event.preventDefault();
+      showFormData();
+  });
+
+  /*
+  *   Except the Enter key as well
+  */
+  $(document).keypress(function(e) {
+    if(e.which == 13) {
+      event.preventDefault();
+      showFormData();
+    }
+  });
+  /*
+  *   Except change on Radio Button
+  */
+  $("input:radio").change(function(){
+    showFormData();
+  });
+
+  // Display the parsed information into a table
+function showInventory(arr) {
+	var out = "";
+  var i;
+  var itemsfound = arr.inventory.length;
+  var totalcost = 0.00;
+  var totalpriced = 0.00;
+  var totalsold = 0.00;
+  var totalnet = 0.00;
+  out += "</p><b>" + itemsfound + " Item(s) found</b></p>"
+	out += "<table class='table table-striped' data-show-columns='true' id='positions'>";
+	out += "<th align='left' width=2%>ID</th>";
+  out += "<th align='left' width=10%>Inv Date</th>";
+  out += "<th align='left' width=10%>Sold Date</th>";
+  out += "<th align='left' width=26%>Description</th>";
+  out += "<th align='left' width=4%>Cost</th>";
+  out += "<th align='left' width=4%>Priced</th>";
+  out += "<th align='left' width=4%>Sold</th>";
+  //out += "<th align='left' width=4%>5%</th>";
+  //out += "<th align='left' width=10%>Net</th>";
+  out += "<th align='left' width=26%>Comments</th>";
+
+	for(i = 0; i < arr.inventory.length; i++) {
+        out += "<tr><td>" + arr.inventory[i].ID + "</td>"
+		      +  "<td>" + arr.inventory[i].InvDate + "</td>"
+		      +  "<td>" + arr.inventory[i].SoldDate + "</td>"
+            +  "<td>" + arr.inventory[i].Description + "</td>"
+            +  "<td>" + arr.inventory[i].Cost + "</td>"
+            +  "<td>" + arr.inventory[i].Priced + "</td>"
+            +  "<td>" + arr.inventory[i].Sold + "</td>"
+            //+  "<td>" + arr.inventory[i].Commission + "</td>"
+            //+  "<td>" + arr.inventory[i].Net + "</td>"
+            +  "<td>" + arr.inventory[i].Comments + "</td></tr>"
+
+            totalcost += parseFloat(arr.inventory[i].Cost);
+            totalpriced += parseFloat(arr.inventory[i].Priced);
+            totalsold += parseFloat(arr.inventory[i].Sold);
+            totalnet += parseFloat(arr.inventory[i].Net);
+    }
+  out += "<tr><td></td><td></td><td></td><td></td>"
+  out += "<td><b>" + totalcost.toFixed(2) + "</b></td>"
+  out += "<td><b>" + totalpriced.toFixed(2) + "</b></td>"
+  out += "<td><b>" + totalsold.toFixed(2) + "</b></td><td><b>Summary</b></td></tr>"
+  //out += "<td><b>" + totalnet.toFixed(2) + "</b></td><td><b>Summary</b></td></tr>"
+	out += "</table>"
+	document.getElementById("searchresults").innerHTML = out;
+}
+
+</script>
+
+</body>
+</html>
