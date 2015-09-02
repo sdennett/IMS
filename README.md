@@ -1,3 +1,3 @@
-IMS is an Inventory Mamagement system which is a Web Based Application which is both Mobile and Desktop friendly. 
+IMS is an Inventory Management system which is a Web Based Application which is both Mobile and Desktop friendly. 
 
 
